@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="om">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AmoleBet Premium AI Console</title>
+    <!-- Tailwind CSS for modern responsive layout -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Telegram WebApp SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- FontAwesome for gaming icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: radial-gradient(circle at top, #0f172a, #070a13);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .glow-green { box-shadow: 0 0 15px rgba(52, 211, 153, 0.2); }
+        .glow-red { box-shadow: 0 0 15px rgba(239, 68, 68, 0.2); }
+        .glow-yellow { box-shadow: 0 0 15px rgba(245, 158, 11, 0.25); }
+        .glow-blue { box-shadow: 0 0 15px rgba(59, 130, 246, 0.2); }
+        .glow-purple { box-shadow: 0 0 15px rgba(139, 92, 246, 0.2); }
+    </style>
+</head>
+<body class="text-white min-h-screen pb-24 select-none flex flex-col items-center">
+
+    <!-- ==================== MAIN CONTAINER ==================== -->
+    <div id="app-console" class="w-full max-w-md p-4 space-y-5">
+        
+        <!-- ==================== HEADER BAR ==================== -->
+        <header class="flex justify-between items-center bg-[#111827]/80 backdrop-blur-md p-3 rounded-2xl border border-gray-800/50">
+            <div class="flex items-center gap-2">
+                <span class="text-xl font-black italic text-emerald-400 tracking-wider">amole<span class="text-amber-500">bet</span></span>
+            </div>
+            <!-- Auto-Loaded Telegram Profile -->
+            <div class="flex items-center gap-2 bg-[#061510] border border-emerald-500/20 px-3 py-1.5 rounded-full">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span id="header-username" class="text-xs font-bold text-emerald-400">Loading...</span>
+            </div>
+        </header>
+
+        <!-- ==================== WALLET CARD ==================== -->
+        <div class="bg-gradient-to-r from-[#0a2015] to-[#040d0a] p-5 rounded-3xl border border-emerald-500/20 shadow-xl flex justify-between items-center glow-green">
+            <div>
+                <p id="player-label" class="text-[10px] text-emerald-400 font-bold uppercase tracking-widest">Haffee Herregaa (Balance)</p>
+                <h1 id="user-balance" class="text-3xl font-black text-white mt-1">100.00 ETB</h1>
+            </div>
+            <div class="flex flex-col gap-1.5 text-xs">
+                <button onclick="switchTab('deposit')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl font-black uppercase tracking-wider transition">Deposit</button>
+                <button onclick="switchTab('withdraw')" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-xl font-black uppercase tracking-wider transition">Withdraw</button>
+            </div>
+        </div>
+
+        <!-- ==================== LIVE CLAIMS TICKER ==================== -->
+        <div class="bg-indigo-950/20 py-2 px-4 rounded-xl border border-gray-800/40 flex items-center justify-between text-[11px] text-slate-400">
+            <span class="text-amber-500 font-black flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span> Live Claims:</span>
+            <div class="overflow-hidden relative w-[70%] h-4">
+                <div id="ticker" class="absolute whitespace-nowrap font-bold text-slate-300">
+                    Loading live platform transactions...
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== TAB: LOBBY ==================== -->
+        <div id="tab-lobby" class="tab-page space-y-4">
+            <!-- Invite Banner Link -->
+            <div onclick="switchTab('invite')" class="bg-[#0b1c12] p-3 rounded-2xl border border-emerald-950/50 text-center text-xs text-emerald-300 font-black cursor-pointer hover:bg-emerald-950/20 transition">
+                🎁 Safe Affeerraa: Invite friends &amp; get +10.00 ETB reward!
+            </div>
+            
+            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest pl-1">🚀 Available Game Suite</h3>
+            
+            <div class="grid grid-cols-2 gap-3">
+                <!-- 1. Aviator -->
+                <div onclick="switchTab('aviator')" class="bg-[#111827] border border-gray-800/80 rounded-2xl overflow-hidden hover:border-red-500/30 transition relative group cursor-pointer">
+                    <div class="p-4 flex flex-col items-center justify-center bg-gradient-to-br from-red-600/10 to-transparent h-28">
+                        <span class="text-4xl group-hover:scale-110 transition duration-300">✈️</span>
+                        <h4 class="font-black text-xs text-white mt-2 tracking-wider">AVIATOR</h4>
+                    </div>
+                </div>
+                <!-- 2. Slots -->
+                <div onclick="switchTab('slots')" class="bg-[#111827] border border-gray-800/80 rounded-2xl overflow-hidden hover:border-yellow-500/30 transition relative group cursor-pointer">
+                    <div class="p-4 flex flex-col items-center justify-center bg-gradient-to-br from-amber-600/10 to-transparent h-28">
+                        <span class="text-4xl group-hover:scale-110 transition duration-300">🎰</span>
+                        <h4 class="font-black text-xs text-white mt-2 tracking-wider">SLOTS</h4>
+                    </div>
+                </div>
+                <!-- 3. Dice -->
+                <div onclick="switchTab('dice')" class="bg-[#111827] border border-gray-800/80 rounded-2xl overflow-hidden hover:border-blue-500/30 transition relative group cursor-pointer">
+                    <div class="p-4 flex flex-col items-center justify-center bg-gradient-to-br from-blue-600/10 to-transparent h-28">
+                        <span class="text-4xl group-hover:scale-110 transition duration-300">🎲</span>
+                        <h4 class="font-black text-xs text-white mt-2 tracking-wider">DICE</h4>
+                    </div>
+                </div>
+                <!-- 4. Mines -->
+                <div onclick="switchTab('mines')" class="bg-[#111827] border border-gray-800/80 rounded-2xl overflow-hidden hover:border-purple-500/30 transition relative group cursor-pointer">
+                    <div class="p-4 flex flex-col items-center justify-center bg-gradient-to-br from-purple-600/10 to-transparent h-28">
+                        <span class="text-4xl group-hover:scale-110 transition duration-300">💣</span>
+                        <h4 class="font-black text-xs text-white mt-2 tracking-wider">MINES</h4>
+                    </div>
+                </div>
+                <!-- 5. Roulette -->
+                <div onclick="switchTab('roulette')" class="bg-[#111827] border border-gray-800/80 rounded-2xl overflow-hidden hover:border-emerald-500/30 transition relative group col-span-2 cursor-pointer">
+                    <div class="p-4 flex flex-col items-center justify-center bg-gradient-to-r from-emerald-600/10 to-transparent h-24">
+                        <span class="text-4xl group-hover:scale-110 transition duration-300">🎡</span>
+                        <h4 class="font-black text-xs text-white mt-1 tracking-wider">CLASSIC ROULETTE</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== TAB: AVIATOR ==================== -->
+        <div id="tab-aviator" class="tab-page hidden space-y-4">
+            <button onclick="switchTab('lobby')" class="text-xs text-gray-400"><i class="fa-solid fa-arrow-left"></i> Gara Lobby</button>
+            <div class="bg-[#090d10] border border-red-500/20 rounded-2xl p-6 h-52 flex flex-col justify-between relative overflow-hidden glow-red">
+                <div class="flex justify-between text-[10px] text-gray-500">
+                    <span>Aviator Crash</span>
+                    <span id="aviator-status" class="text-red-400 font-bold uppercase">Ready</span>
+                </div>
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <span id="aviator-multiplier" class="text-5xl font-black text-white">1.00x</span>
+                </div>
+            </div>
+            <div class="bg-[#111827] p-4 rounded-2xl space-y-3 border border-gray-800/80">
+                <input id="aviator-bet-input" type="number" value="10" class="w-full bg-[#0d1216] border border-gray-800 rounded-xl py-3 text-center font-bold text-white outline-none">
+                <button id="aviator-main-btn" onclick="triggerAviator()" class="w-full bg-red-600 text-white font-extrabold py-3.5 rounded-xl transition duration-200">BET</button>
+            </div>
+        </div>
+
+        <!-- ==================== TAB: SLOTS ==================== -->
+        <div id="tab-slots" class="tab-page hidden space-y-4">
+            <button onclick="switchTab('lobby')" class="text-xs text-gray-400"><i class="fa-solid fa-arrow-left"></i> Gara Lobby</button>
+            <div class="bg-[#1c160c] border border-amber-500/30 rounded-3xl p-6 text-center glow-yellow">
+                <div class="grid grid-cols-3 gap-3 bg-[#07090b] py-6 px-4 rounded-2xl">
+                    <div class="text-5xl" id="slot-reel-1">🍒</div>
+                    <div class="text-5xl" id="slot-reel-2">🍇</div>
+                    <div class="text-5xl" id="slot-reel-3">7️⃣</div>
+                </div>
+            </div>
+            <button id="slots-spin-btn" onclick="spinSlots()" class="w-full bg-amber-500 text-black font-black py-4 rounded-xl shadow-lg transition duration-200">🎰 SPIN (15 ETB)</button>
+        </div>
+
+        <!-- ==================== TAB: DICE ==================== -->
+        <div id="tab-dice" class="tab-page hidden space-y-4">
+            <button onclick="switchTab('lobby')" class="text-xs text-gray-400"><i class="fa-solid fa-arrow-left"></i> Gara Lobby</button>
+            <div class="bg-[#0c121c] border border-blue-500/20 rounded-2xl p-6 text-center glow-blue space-y-4">
+                <div class="text-5xl font-black text-white" id="dice-roll-result">--</div>
+                <p class="text-xs text-slate-400">Target: Roll OVER 50 to win double your bet!</p>
+            </div>
+            <input id="dice-bet-input" type="number" value="10" class="w-full bg-[#0d1216] border border-gray-800 rounded-xl py-3 text-center font-bold text-white outline-none">
+            <button onclick="playDice()" class="w-full bg-blue-600 text-white font-extrabold py-3.5 rounded-xl transition duration-200">ROLL DICE</button>
+        </div>
+
+        <!-- ==================== TAB: MINES ==================== -->
+        <div id="tab-mines" class="tab-page hidden space-y-4">
+            <button onclick="switchTab('lobby')" class="text-xs text-gray-400"><i class="fa-solid fa-arrow-left"></i> Gara Lobby</button>
+            <div class="bg-[#120e1a] border border-purple-500/20 rounded-2xl p-4 text-center glow-purple space-y-3">
+                <div class="flex justify-between text-xs text-gray-400 mb-2">
+                    <span id="mines-multiplier">Cashout: 0.00 ETB</span>
+                    <span class="text-purple-400 font-bold">Mines: 3</span>
+                </div>
+                <div class="grid grid-cols-5 gap-2 max-w-[280px] mx-auto" id="mines-grid"></div>
+            </div>
+            <div class="flex gap-3">
+                <button id="mines-start-btn" onclick="startMinesGame()" class="flex-1 bg-purple-600 text-white font-black py-3 rounded-xl uppercase">Start (10 ETB)</button>
+                <button id="mines-cashout-btn" onclick="cashoutMines()" class="flex-1 bg-emerald-600 text-white font-black py-3 rounded-xl uppercase hidden">Cashout</button>
+            </div>
+        </div>
+
+        <!-- ==================== TAB: ROULETTE ==================== -->
+        <div id="tab-roulette" class="tab-page hidden space-y-4">
+            <button onclick="switchTab('lobby')" class="text-xs text-gray-400"><i class="fa-solid fa-arrow-left"></i> Gara Lobby</button>
+            <div class="bg-[#0e1612] border border-emerald-500/20 rounded-2xl p-6 text-center glow-green space-y-3">
+                <div id="roulette-wheel" class="text-4xl py-4 font-black">🎡</div>
+                <p id="roulette-result-display" class="text-xs text-gray-400">Choose a color to bet on!</p>
+            </div>
+            <input id="roulette-bet-input" type="number" value="10" class="w-full bg-[#0d1216] border border-gray-800 rounded-xl py-3 text-center font-bold text-white outline-none">
+            <div class="grid grid-cols-3 gap-2">
+                <button onclick="spinRoulette('red')" class="bg-red-600 text-white text-xs font-black py-3 rounded-xl">🔴 Red (2x)</button>
+                <button onclick="spinRoulette('black')" class="bg-gray-800 text-white text-xs font-black py-3 rounded-xl">⚫ Black (2x)</button>
+                <button onclick="spinRoulette('green')" class="bg-emerald-600 text-white text-xs font-black py-3 rounded-xl">🟢 Green (14x)</button>
+            </div>
+        </div>
+
+        <!-- ==================== TAB: DEPOSIT ==================== -->
+        <div id="tab-deposit" class="tab-page hidden space-y-4">
+            <button onclick="switchTab('lobby')" class="text-xs text-gray-400"><i class="fa-solid fa-arrow-left"></i> Gara Lobby</button>
+            <div class="bg-[#0f172a] p-5 rounded-2xl border border-emerald-500/20 space-y-3">
+                <h3 class="text-emerald-400 font-bold uppercase tracking-wider">📥 Deposit via Telebirr</h3>
+                <p class="text-xs text-slate-400">Enter the amount of Birr you want to deposit:</p>
+                <input id="dep-amount" type="number" placeholder="Amount (ETB)" class="w-full p-3 bg-[#070a13] rounded-xl outline-none border border-gray-800 text-sm font-bold text-white">
+                <button onclick="requestDeposit()" class="w-full bg-emerald-600 py-3.5 rounded-xl font-black uppercase tracking-wider">Request Deposit</button>
+            </div>
+        </div>
+
+        <!-- ==================== TAB: WITHDRAW ==================== -->
+        <div id="tab-withdraw" class="tab-page hidden space-y-4">
+            <button onclick="switchTab('lobby')" class="text-xs text-gray-400"><i class="fa-solid fa-arrow-left"></i> Gara Lobby</button>
+            <div class="bg-[#0f172a] p-5 rounded-2xl border border-gray-800/80 space-y-3">
+                <h3 class="text-amber-500 font-bold uppercase tracking-wider">📤 Withdraw Winnings</h3>
+                <p class="text-xs text-slate-400">Minimum withdrawal is 50 ETB.</p>
+                <input id="wit-amount" type="number" placeholder="Amount (ETB)" class="w-full p-3 bg-[#070a13] rounded-xl outline-none border border-gray-800 text-sm font-bold text-white">
+                <input id="wit-phone" placeholder="Telebirr Phone Number (09...)" class="w-full p-3 bg-[#070a13] rounded-xl outline-none border border-gray-800 text-sm font-bold text-white">
+                <button onclick="requestWithdrawal()" class="w-full bg-amber-500 text-black py-3.5 rounded-xl font-black uppercase tracking-wider">Request Cashout</button>
+            </div>
+        </div>
+
+        <!-- ==================== TAB: INVITE ==================== -->
+        <div id="tab-invite" class="tab-page hidden space-y-4">
+            <button onclick="switchTab('lobby')" class="text-xs text-gray-400"><i class="fa-solid fa-arrow-left"></i> Gara Lobby</button>
+            <div class="bg-[#0c121c] p-6 rounded-2xl border border-blue-900/40 text-center space-y-4">
+                <span class="text-4xl">🎁</span>
+                <h3 class="text-blue-400 font-bold text-lg uppercase tracking-wider">Affeerraa (Referral Link)</h3>
+                <p class="text-xs text-gray-400">Share your custom referral link. When friends join, you both get a +10.00 ETB balance reward instantly!</p>
+                <div class="bg-[#070a13] p-3 rounded-xl border border-gray-800 select-all font-mono text-xs text-blue-300 break-all" id="ref-link-display">
+                    Generating Link...
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ==================== JAVASCRIPT ==================== -->
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        let tgUser = tg.initDataUnsafe?.user || { id: 7633079156, first_name: "Shamil", username: "Shamil_Admin" };
+        
+        let balance = parseFloat(localStorage.getItem('amole_user_balance')) || 100.0;
+        
+        // Auto-loads Profile Data
+        document.getElementById('header-username').innerText = `@${tgUser.username || tgUser.first_name}`;
+        document.getElementById('player-label').innerText = `${tgUser.first_name} (Balance)`;
+        document.getElementById('ref-link-display').innerText = `https://t.me/AmoleTriviaBot?start=ref_${tgUser.id}`;
+        
+        // Auto-Register user in SQLite database silently
+        tg.sendData(JSON.stringify({
+            action: "auto_sync",
+            telegram_id: tgUser.id,
+            name: tgUser.first_name,
+            username: tgUser.username || ""
+        }));
+
+        updateUIBalance();
+
+        function updateUIBalance() {
+            localStorage.setItem('amole_user_balance', balance);
+            document.getElementById('user-balance').innerText = `${balance.toFixed(2)} ETB`;
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-page').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            if (tabId === 'mines') renderMinesGrid();
+        }
+
+        // ==================== DEPOSIT/WITHDRAW INTEGRATION ====================
+        function requestDeposit() {
+            const amt = parseFloat(document.getElementById('dep-amount').value);
+            if (isNaN(amt) || amt < 10) return alert("Deposit kaffaltiin xiqqaan 10 ETB dha!");
+            
+            tg.sendData(JSON.stringify({
+                action: "deposit_request",
+                telegram_id: tgUser.id,
+                amount: amt
+            }));
+            alert("Deposit request submitted! Send your payment proof in your Telegram chat.");
+            switchTab('lobby');
+        }
+
+        function requestWithdrawal() {
+            const amt = parseFloat(document.getElementById('wit-amount').value);
+            const phone = document.getElementById('wit-phone').value.trim();
+            
+            if (isNaN(amt) || amt < 50) return alert("Withdrawal kaffaltiin xiqqaan 50 ETB dha!");
+            if (balance < amt) return alert("Haffee herrega kee gahaa miti!");
+            if (!phone) return alert("Maaloo lakkoofsa bilbilaa galchi!");
+
+            balance -= amt;
+            updateUIBalance();
+
+            tg.sendData(JSON.stringify({
+                action: "withdraw_request",
+                telegram_id: tgUser.id,
+                phone: phone,
+                amount: amt,
+                account_holder: tgUser.first_name
+            }));
+            alert("Withdrawal submitted. Shamil will send it soon!");
+            switchTab('lobby');
+        }
+
+        // ==================== GAME LOGIC ====================
+        let aviatorActive = false, aviatorInterval = null, avMultiplier = 1.0, avCrashPoint = 1.0, avCurrentBet = 0;
+        function triggerAviator() {
+            const btn = document.getElementById('aviator-main-btn'), betInput = document.getElementById('aviator-bet-input');
+            const status = document.getElementById('aviator-status'), multDisplay = document.getElementById('aviator-multiplier');
+            if (!aviatorActive) {
+                const betVal = parseFloat(betInput.value);
+                if (balance < betVal || betVal <= 0) return alert("Balance kee gahaa miti!");
+                
+                balance -= betVal; avCurrentBet = betVal; updateUIBalance();
+                avCrashPoint = parseFloat((Math.random() * 3.5 + 1.1).toFixed(2));
+                avMultiplier = 1.0; aviatorActive = true;
+                status.innerText = "Flying..."; btn.innerText = "CASH OUT";
+                
+                aviatorInterval = setInterval(() => {
+                    avMultiplier += 0.05;
+                    multDisplay.innerText = `${avMultiplier.toFixed(2)}x`;
+                    if (avMultiplier >= avCrashPoint) {
+                        clearInterval(aviatorInterval); aviatorActive = false;
+                        status.innerText = "CRASHED! 💥"; multDisplay.innerText = `💥 ${avCrashPoint.toFixed(2)}x`;
+                        btn.innerText = "BET";
+                    }
+                }, 100);
+            } else {
+                clearInterval(aviatorInterval); aviatorActive = false;
+                const winAmount = avCurrentBet * avMultiplier;
+                balance += winAmount; updateUIBalance();
+                status.innerText = "WON! 🎉"; btn.innerText = "BET";
+                alert(`You won +${winAmount.toFixed(2)} ETB!`);
+            }
+        }
+
+        function spinSlots() {
+            const btn = document.getElementById('slots-spin-btn');
+            if (balance < 15) return alert("Balance kee gahaa miti!");
+            balance -= 15; updateUIBalance(); btn.disabled = true;
+            const emojis = ['🍒', '🍋', '🍇', '💎', '7️⃣'];
+            let count = 0;
+            const interval = setInterval(() => {
+                document.getElementById('slot-reel-1').innerText = emojis[Math.floor(Math.random()*5)];
+                document.getElementById('slot-reel-2').innerText = emojis[Math.floor(Math.random()*5)];
+                document.getElementById('slot-reel-3').innerText = emojis[Math.floor(Math.random()*5)];
+                if (++count > 10) {
+                    clearInterval(interval); btn.disabled = false;
+                    const r1 = emojis[Math.floor(Math.random()*5)], r2 = emojis[Math.floor(Math.random()*5)], r3 = emojis[Math.floor(Math.random()*5)];
+                    document.getElementById('slot-reel-1').innerText = r1;
+                    document.getElementById('slot-reel-2').innerText = r2;
+                    document.getElementById('slot-reel-3').innerText = r3;
+                    if (r1 === r2 && r2 === r3) {
+                        let win = r1 === '7️⃣' ? 500 : r1 === '💎' ? 250 : 100;
+                        balance += win; updateUIBalance(); alert(`Jackpot! You won +${win} ETB!`);
+                    } else if (r1 === r2 || r1 === r3 || r2 === r3) {
+                        balance += 20; updateUIBalance(); alert("You won +20 ETB!");
+                    }
+                }
+            }, 80);
+        }
+
+        function playDice() {
+            const betInput = document.getElementById('dice-bet-input');
+            const betVal = parseFloat(betInput.value);
+            if (balance < betVal || betVal <= 0) return alert("Balance kee gahaa miti!");
+            balance -= betVal; updateUIBalance();
+            const roll = Math.floor(Math.random() * 100);
+            document.getElementById('dice-roll-result').innerText = roll;
+            if (roll >= 50) {
+                const won = betVal * 2.0;
+                balance += won; updateUIBalance();
+                alert(`🎉 Rolled ${roll}! Won +${won.toFixed(2)} ETB!`);
+            } else {
+                alert(`😔 Rolled ${roll}! You lost.`);
+            }
+        }
+
+        let minesList = [], revealedCount = 0, minesActive = false, minesWinnings = 0;
+        function renderMinesGrid() {
+            const grid = document.getElementById('mines-grid'); grid.innerHTML = '';
+            for (let i = 0; i < 25; i++) {
+                grid.innerHTML += `<button onclick="revealTile(${i})" id="mine-${i}" class="bg-[#1e293b] w-12 h-12 rounded-xl text-lg font-bold hover:bg-purple-900/40 transition">?</button>`;
+            }
+        }
+        function startMinesGame() {
+            if (balance < 10) return alert("Balance kee gahaa miti!");
+            balance -= 10; updateUIBalance();
+            minesActive = true; revealedCount = 0; minesWinnings = 10;
+            document.getElementById('mines-start-btn').classList.add('hidden');
+            document.getElementById('mines-cashout-btn').classList.remove('hidden');
+            minesList = Array(25).fill(false);
+            let mineIndices = new Set();
+            while(mineIndices.size < 3) mineIndices.add(Math.floor(Math.random()*25));
+            mineIndices.forEach(idx => minesList[idx] = true);
+            renderMinesGrid();
+        }
+        function revealTile(idx) {
+            if (!minesActive) return;
+            const tile = document.getElementById(`mine-${idx}`);
+            if (tile.innerText !== '?') return;
+            if (minesList[idx]) {
+                tile.innerText = '💣'; tile.className = "bg-red-600 w-12 h-12 rounded-xl text-lg";
+                minesActive = false; alert("💥 BOOM! You hit a mine.");
+                document.getElementById('mines-start-btn').classList.remove('hidden');
+                document.getElementById('mines-cashout-btn').classList.add('hidden');
+            } else {
+                tile.innerText = '💎'; tile.className = "bg-emerald-600 w-12 h-12 rounded-xl text-lg";
+                revealedCount++; minesWinnings = parseFloat((minesWinnings * 1.35).toFixed(2));
+                document.getElementById('mines-multiplier').innerText = `Cashout: ${minesWinnings.toFixed(2)} ETB`;
+            }
+        }
+        function cashoutMines() {
+            if (!minesActive) return;
+            balance += minesWinnings; updateUIBalance();
+            minesActive = false; alert(`🎉 Cashed out! Won +${minesWinnings.toFixed(2)} ETB!`);
+            document.getElementById('mines-start-btn').classList.remove('hidden');
+            document.getElementById('mines-cashout-btn').classList.add('hidden');
+        }
+
+        function spinRoulette(choice) {
+            const betVal = parseFloat(document.getElementById('roulette-bet-input').value);
+            if (balance < betVal || betVal <= 0) return alert("Balance kee gahaa miti!");
+            balance -= betVal; updateUIBalance();
+            const winningColor = Math.random() < 0.1 ? 'green' : (Math.random() < 0.5 ? 'red' : 'black');
+            document.getElementById('roulette-wheel').innerText = winningColor === 'green' ? '🟢' : (winningColor === 'red' ? '🔴' : '⚫');
+            if (choice === winningColor) {
+                let multiplier = winningColor === 'green' ? 14 : 2;
+                const won = betVal * multiplier;
+                balance += won; updateUIBalance();
+                alert(`🎉 Lucky Spin! Landed on ${winningColor.toUpperCase()}! Won +${won.toFixed(2)} ETB!`);
+            } else {
+                alert(`😔 Landed on ${winningColor.toUpperCase()}! You lost.`);
+            }
+        }
+
+        // Live claims simulated ticker
+        const users = ['sam_32', 'bini_eth', 'shamil99', 'almaz_x', 'chala_b', 'tsion_2', 'moha_a'];
+        setInterval(() => {
+            const randomUser = users[Math.floor(Math.random() * users.length)];
+            const randomVal = (Math.random() * 200 + 10).toFixed(2);
+            document.getElementById('ticker').innerText = `@${randomUser} — claimed profit ${randomVal} ETB`;
+        }, 4000);
+    </script>
+</body>
+</html>
